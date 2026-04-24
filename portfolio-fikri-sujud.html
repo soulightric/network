@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fikri Sujud — Network Engineer</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0a0a0a;
+      --white: #f5f5f5;
+      --mid: #888;
+      --light: #d0d0d0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--white);
+      color: var(--black);
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE TEXTURE ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 200px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── LAYOUT ── */
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 36px 0 40px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.1s;
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: -0.02em;
+      color: var(--black);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 12px;
+      color: var(--mid);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--black); }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 80px 0 100px;
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards 0.25s;
+    }
+
+    .hero-label {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hero-label::before {
+      content: '';
+      display: inline-block;
+      width: 24px;
+      height: 1px;
+      background: var(--mid);
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(52px, 9vw, 96px);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      color: var(--black);
+      margin-bottom: 40px;
+    }
+
+    h1 span {
+      color: var(--light);
+    }
+
+    .hero-desc {
+      max-width: 480px;
+      color: var(--mid);
+      font-size: 14px;
+      line-height: 1.8;
+      margin-bottom: 48px;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--white);
+      background: var(--black);
+      padding: 14px 28px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .hero-cta:hover { opacity: 0.75; }
+
+    .hero-cta svg { width: 14px; height: 14px; }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: var(--light);
+      margin: 0;
+    }
+
+    /* ── SECTION ── */
+    section {
+      padding: 80px 0;
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+      margin-bottom: 56px;
+    }
+
+    .section-num {
+      font-size: 11px;
+      color: var(--light);
+      letter-spacing: 0.1em;
+    }
+
+    h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--black);
+    }
+
+    /* ── SKILLS ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1px;
+      background: var(--light);
+    }
+
+    .skill-item {
+      background: var(--white);
+      padding: 28px 24px;
+      transition: background 0.2s;
+    }
+
+    .skill-item:hover { background: var(--black); }
+    .skill-item:hover .skill-name { color: var(--white); }
+    .skill-item:hover .skill-tag { color: var(--mid); }
+
+    .skill-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 6px;
+      transition: color 0.2s;
+    }
+
+    .skill-tag {
+      font-size: 11px;
+      color: var(--light);
+      letter-spacing: 0.06em;
+      transition: color 0.2s;
+    }
+
+    /* ── EXPERIENCE ── */
+    .exp-list { display: flex; flex-direction: column; gap: 0; }
+
+    .exp-item {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 32px;
+      padding: 36px 0;
+      position: relative;
+    }
+
+    .exp-item + .exp-item {
+      border-top: 1px solid var(--light);
+    }
+
+    .exp-period {
+      font-size: 11px;
+      color: var(--mid);
+      letter-spacing: 0.06em;
+      padding-top: 4px;
+    }
+
+    .exp-role {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--black);
+      margin-bottom: 4px;
+      letter-spacing: -0.02em;
+    }
+
+    .exp-company {
+      font-size: 12px;
+      color: var(--mid);
+      margin-bottom: 16px;
+      letter-spacing: 0.04em;
+    }
+
+    .exp-desc {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.8;
+    }
+
+    /* ── PROJECTS ── */
+    .projects-list { display: flex; flex-direction: column; gap: 0; }
+
+    .project-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 36px 0;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+
+    .project-item + .project-item { border-top: 1px solid var(--light); }
+
+    .project-item:hover .project-name { color: var(--mid); }
+
+    .project-left { flex: 1; }
+
+    .project-tag {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--light);
+      margin-bottom: 10px;
+    }
+
+    .project-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--black);
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+      transition: color 0.2s;
+    }
+
+    .project-desc {
+      font-size: 13px;
+      color: #777;
+      max-width: 500px;
+      line-height: 1.7;
+    }
+
+    .project-arrow {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--light);
+      margin-top: 4px;
+    }
+
+    /* ── CONTACT ── */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+    }
+
+    .contact-left h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--black);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+
+    .contact-left p {
+      font-size: 13px;
+      color: var(--mid);
+      line-height: 1.8;
+      margin-bottom: 32px;
+    }
+
+    .contact-email {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--black);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+      transition: color 0.2s;
+    }
+
+    .contact-email:hover { color: var(--mid); }
+
+    .contact-right { padding-top: 8px; }
+
+    .contact-list { list-style: none; }
+
+    .contact-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--light);
+    }
+
+    .contact-list li:first-child { border-top: 1px solid var(--light); }
+
+    .contact-list .label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--light);
+    }
+
+    .contact-list .value {
+      font-size: 13px;
+      color: var(--black);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .contact-list a.value:hover { color: var(--mid); }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 40px 0;
+      border-top: 1px solid var(--light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.8s;
+    }
+
+    footer span {
+      font-size: 11px;
+      color: var(--light);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── ANIMATION ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    #about   { animation-delay: 0.35s; }
+    #skills  { animation-delay: 0.45s; }
+    #exp     { animation-delay: 0.55s; }
+    #projects{ animation-delay: 0.65s; }
+    #contact { animation-delay: 0.75s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 620px) {
+      .page { padding: 0 20px; }
+      nav { flex-direction: column; align-items: flex-start; gap: 20px; }
+      .exp-item { grid-template-columns: 1fr; gap: 8px; }
+      .contact-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 52px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">FS</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#exp">Experience</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <p class="hero-label">Network Engineer · Based in Indonesia</p>
+    <h1>Fikri<br /><span>Sujud</span></h1>
+    <p class="hero-desc">
+      Membangun infrastruktur jaringan yang andal, aman, dan scalable.
+      Berfokus pada desain arsitektur, keamanan jaringan, dan optimasi performa sistem.
+    </p>
+    <a class="hero-cta" href="#contact">
+      Let's Connect
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M3 8h10M9 4l4 4-4 4"/>
+      </svg>
+    </a>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>About</h2>
+    </div>
+    <div style="max-width:580px;">
+      <p style="color:#555; font-size:14px; line-height:2; margin-bottom:20px;">
+        Saya adalah Network Engineer dengan pengalaman dalam merancang, mengimplementasikan, dan mengelola infrastruktur jaringan skala enterprise. Passionate dalam bidang keamanan jaringan dan automasi.
+      </p>
+      <p style="color:#555; font-size:14px; line-height:2;">
+        Dengan pemahaman mendalam tentang protokol jaringan, routing, dan switching, saya membantu organisasi membangun konektivitas yang efisien dan tahan terhadap ancaman siber modern.
+      </p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Skills</h2>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-item">
+        <div class="skill-name">Cisco / Juniper</div>
+        <div class="skill-tag">Routing & Switching</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">Firewall</div>
+        <div class="skill-tag">Palo Alto · FortiGate</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">VPN & SD-WAN</div>
+        <div class="skill-tag">IPSec · MPLS · Viptela</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">Network Monitoring</div>
+        <div class="skill-tag">Zabbix · PRTG · Grafana</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">Linux / Bash</div>
+        <div class="skill-tag">Scripting & Automation</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">Python / Ansible</div>
+        <div class="skill-tag">NetDevOps</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">BGP / OSPF / EIGRP</div>
+        <div class="skill-tag">Routing Protocols</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">Wireshark / TCPdump</div>
+        <div class="skill-tag">Packet Analysis</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- EXPERIENCE -->
+  <section id="exp">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>Experience</h2>
+    </div>
+    <div class="exp-list">
+      <div class="exp-item">
+        <div class="exp-period">2022 — Present</div>
+        <div>
+          <div class="exp-role">Senior Network Engineer</div>
+          <div class="exp-company">PT. Telkom Indonesia · Makassar</div>
+          <div class="exp-desc">
+            Mengelola infrastruktur jaringan enterprise dengan 500+ node. Merancang dan mengimplementasikan solusi SD-WAN untuk 30 cabang. Mereduksi downtime sebesar 40% melalui implementasi monitoring proaktif dan automasi.
+          </div>
+        </div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-period">2020 — 2022</div>
+        <div>
+          <div class="exp-role">Network Engineer</div>
+          <div class="exp-company">PT. Iconnet PLN · Makassar</div>
+          <div class="exp-desc">
+            Konfigurasi dan pemeliharaan perangkat Cisco dan Mikrotik. Implementasi VLAN segmentation dan QoS untuk jaringan ISP. Troubleshooting layer 2/3 dan penanganan insiden jaringan.
+          </div>
+        </div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-period">2018 — 2020</div>
+        <div>
+          <div class="exp-role">Junior Network Technician</div>
+          <div class="exp-company">CV. Solusi Nusantara · Parepare</div>
+          <div class="exp-desc">
+            Instalasi dan konfigurasi jaringan LAN/WAN untuk klien SME. Pemasangan dan konfigurasi access point dan managed switch. Dukungan teknis dan pemeliharaan rutin infrastruktur jaringan.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>Projects</h2>
+    </div>
+    <div class="projects-list">
+      <div class="project-item">
+        <div class="project-left">
+          <div class="project-tag">Network Automation</div>
+          <div class="project-name">NetAutoBot</div>
+          <div class="project-desc">
+            Skrip Python + Ansible untuk automasi konfigurasi massal ratusan router Cisco. Mengurangi waktu provisioning dari 2 jam menjadi kurang dari 5 menit.
+          </div>
+        </div>
+        <div class="project-arrow">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M5 15L15 5M15 5H7M15 5v8"/>
+          </svg>
+        </div>
+      </div>
+      <div class="project-item">
+        <div class="project-left">
+          <div class="project-tag">Monitoring Dashboard</div>
+          <div class="project-name">NetWatch</div>
+          <div class="project-desc">
+            Dashboard real-time berbasis Grafana + InfluxDB untuk monitoring latency, packet loss, dan utilisasi bandwidth seluruh node jaringan.
+          </div>
+        </div>
+        <div class="project-arrow">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M5 15L15 5M15 5H7M15 5v8"/>
+          </svg>
+        </div>
+      </div>
+      <div class="project-item">
+        <div class="project-left">
+          <div class="project-tag">Security</div>
+          <div class="project-name">Zero-Trust Lab</div>
+          <div class="project-desc">
+            Implementasi arsitektur zero-trust network access (ZTNA) menggunakan Palo Alto Prisma Access pada environment lab untuk studi keamanan jaringan perusahaan.
+          </div>
+        </div>
+        <div class="project-arrow">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M5 15L15 5M15 5H7M15 5v8"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="contact-grid">
+      <div class="contact-left">
+        <h3>Get in<br/>Touch</h3>
+        <p>Terbuka untuk peluang baru, kolaborasi, atau sekadar ngobrol soal jaringan.</p>
+        <a class="contact-email" href="mailto:fikri.sujud@email.com">fikri.sujud@email.com</a>
+      </div>
+      <div class="contact-right">
+        <ul class="contact-list">
+          <li>
+            <span class="label">LinkedIn</span>
+            <a class="value" href="#">/in/fikrisujud</a>
+          </li>
+          <li>
+            <span class="label">GitHub</span>
+            <a class="value" href="#">/fikrisujud</a>
+          </li>
+          <li>
+            <span class="label">Lokasi</span>
+            <span class="value">Makassar, Indonesia</span>
+          </li>
+          <li>
+            <span class="label">Status</span>
+            <span class="value">Open to Work</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>© 2025 Fikri Sujud</span>
+    <span>Network Engineer · Indonesia</span>
+  </footer>
+
+</div>
+</body>
+</html>
